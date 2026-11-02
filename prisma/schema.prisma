@@ -1,0 +1,131 @@
+// @ts-check
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  telegramId      BigInt    @unique @map("telegram_id")
+  firstName       String?   @map("first_name")
+  lastName        String?   @map("last_name")
+  username        String?
+  initialBalance  BigInt    @default(0) @map("initial_balance")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  transactions    Transaction[]
+  savingsGoals    SavingsGoal[]
+  reminders       Reminder[]
+  settings        UserSettings?
+
+  @@map("users")
+}
+
+model Transaction {
+  id              Int               @id @default(autoincrement())
+  userId          Int               @map("user_id")
+  type            TransactionType
+  amount          BigInt            // dalam satuan rupiah (bukan sen)
+  category        String            @default("lain-lain")
+  description     String
+  transactionDate DateTime          @map("transaction_date")
+  isDeleted       Boolean           @default(false) @map("is_deleted")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  user            User              @relation(fields: [userId], references: [id])
+
+  @@index([userId, transactionDate])
+  @@index([userId, type])
+  @@index([userId, category])
+  @@index([userId, isDeleted])
+  @@map("transactions")
+}
+
+model SavingsGoal {
+  id              Int                   @id @default(autoincrement())
+  userId          Int                   @map("user_id")
+  name            String
+  targetAmount    BigInt                @map("target_amount")
+  isCompleted     Boolean               @default(false) @map("is_completed")
+  isActive        Boolean               @default(true) @map("is_active")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  user            User                  @relation(fields: [userId], references: [id])
+  contributions   SavingsContribution[]
+
+  @@index([userId, isActive])
+  @@map("savings_goals")
+}
+
+model SavingsContribution {
+  id              Int           @id @default(autoincrement())
+  goalId          Int           @map("goal_id")
+  amount          BigInt
+  note            String?
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  goal            SavingsGoal   @relation(fields: [goalId], references: [id])
+
+  @@index([goalId])
+  @@map("savings_contributions")
+}
+
+model Reminder {
+  id              Int           @id @default(autoincrement())
+  userId          Int           @map("user_id")
+  type            ReminderType
+  title           String
+  description     String?
+  cronHour        Int           @map("cron_hour")
+  cronMinute      Int           @map("cron_minute")
+  cronDayOfMonth  Int?          @map("cron_day_of_month")
+  isActive        Boolean       @default(true) @map("is_active")
+  lastTriggered   DateTime?     @map("last_triggered")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  user            User          @relation(fields: [userId], references: [id])
+
+  @@index([userId, isActive])
+  @@map("reminders")
+}
+
+model ProcessedTelegramUpdate {
+  id              Int           @id @default(autoincrement())
+  updateId        BigInt        @unique @map("update_id")
+  processedAt     DateTime      @default(now()) @map("processed_at")
+
+  @@map("processed_telegram_updates")
+}
+
+model UserSettings {
+  id              Int           @id @default(autoincrement())
+  userId          Int           @unique @map("user_id")
+  timezone        String        @default("Asia/Makassar")
+  language        String        @default("id")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  user            User          @relation(fields: [userId], references: [id])
+
+  @@map("user_settings")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum ReminderType {
+  DAILY
+  MONTHLY
+  CUSTOM
+}

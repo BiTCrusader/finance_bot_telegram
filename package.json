@@ -1,0 +1,41 @@
+{
+  "name": "personal-finance-bot",
+  "version": "1.0.0",
+  "description": "AI Personal Finance Telegram Bot - Asisten keuangan pribadi berbasis AI",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push",
+    "db:migrate": "npx prisma migrate dev",
+    "db:studio": "npx prisma studio",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --forceExit",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "webhook:set": "node scripts/set-webhook.js",
+    "webhook:delete": "node scripts/delete-webhook.js",
+    "webhook:info": "node scripts/webhook-info.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@prisma/client": "^6.1.0",
+    "express": "^4.21.0",
+    "telegraf": "^4.16.0",
+    "pdfkit": "^0.15.0",
+    "exceljs": "^4.4.0",
+    "dayjs": "^1.11.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^8.0.0",
+    "dotenv": "^16.4.0",
+    "winston": "^3.14.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.1.0",
+    "jest": "^29.7.0",
+    "@jest/globals": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

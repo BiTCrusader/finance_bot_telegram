@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: personal-finance-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate
+    startCommand: node src/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BOT_TOKEN
+        sync: false
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: WEBHOOK_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ALLOWED_TELEGRAM_IDS
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+      - key: TZ
+        value: Asia/Makassar
