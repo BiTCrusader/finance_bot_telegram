@@ -323,5 +323,5 @@ class AIService {
 }
 
 /** Singleton AI service instance */
-const aiService = new AIService();
+export const aiService = new AIService();
 export default aiService;
